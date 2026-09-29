@@ -22,6 +22,10 @@ The last comment block of each slide will be treated as slide notes. It will be 
 -->
 
 ---
+src: ./pages/02-nfas.md
+---
+
+---
 src: ./pages/02-what-is-slidev.md
 ---
 
