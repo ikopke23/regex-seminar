@@ -26,7 +26,7 @@ src: ./pages/02-what-is-slidev.md
 ---
 
 ---
-src: ./pages/03-table-of-contents.md
+src: ./pages/03-riprepair.md
 ---
 
 ---
