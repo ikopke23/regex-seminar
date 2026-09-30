@@ -34,6 +34,10 @@ src: ./pages/04-navigation.md
 ---
 
 ---
+src: ./pages/05-efficiency.md
+---
+
+---
 src: ./pages/05-code.md
 ---
 
