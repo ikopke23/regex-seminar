@@ -1,15 +1,36 @@
 ---
-clicks: 3
+clicks: 7
 ---
 
 # PCRE2 Syntax
 
 <SyntaxTabs :step="$clicks" :tabs="{
+  pcre2: 'What is PCRE2',
   chars: 'Character Types',
+  anch: 'Anchors',
   quant: 'Quantifiers',
   groups: 'Groups & Backrefs',
   look: 'Lookarounds',
+  lookex: 'Lookaround Examples',
 }">
+
+<template #pcre2>
+
+## Perl Compatible Regular Expressions
+
+
+<br>PCRE2 is the name used for a revised API for the PCRE library, which is a set of functions, written in C, that implement regular expression pattern matching using the same syntax and semantics as Perl. <sub>1</sub>
+
+PCRE2 was released in 2015 after PCRE became too annoying to improve upon.
+
+Many languages use PCRE/PCRE2 as models for their syntax, as there is no set standard.
+
+<br>
+<sub>1</sub> https://www.pcre.org/current/doc/html/pcre2.html
+
+
+
+</template>
 
 <template #chars>
 
@@ -27,6 +48,10 @@ In examples, `↵` = newline and `→` = tab.
 | `\w` | "word" character | \wa\w | <code><mark>Ian</mark> <mark>5a9</mark>    -a-</code> |
 | `\W` | "non-word" character | \Wa\W | <code><mark>=a)</mark> <mark>-a-</mark> Ian </code>
 
+</template>
+
+<template #anch>
+
 ### Anchors
 
 Anchors match a **position**, not a character.
@@ -41,6 +66,7 @@ Anchors match a **position**, not a character.
 | `\G` | where the previous match ended | `\G\d` | <code><mark>1</mark><mark>2</mark><mark>3</mark>a4</code> <span class="opacity-50">stops at the gap</span> |
 | `\b` | word boundary | `\bcat\b` | <code><mark>cat</mark> concat</code> |
 | `\B` | not a word boundary | `\Bcat` | <code>cat con<mark>cat</mark></code> |
+
 
 </template>
 
@@ -84,6 +110,10 @@ Lookarounds check what's before or after the current position **without consumin
 | `(?!...)` | `(*nla:...)` `(*negative_lookahead:...)` | what follows **must not** match `...` |
 | `(?<=...)` | `(*plb:...)` `(*positive_lookbehind:...)` | what precedes **must** match `...` |
 | `(?<!...)` | `(*nlb:...)` `(*negative_lookbehind:...)` | what precedes **must not** match `...` |
+
+</template>
+
+<template #lookex>
 
 ### Examples
 
