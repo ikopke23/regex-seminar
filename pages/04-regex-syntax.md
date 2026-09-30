@@ -19,14 +19,14 @@ clicks: 7
 ## Perl Compatible Regular Expressions
 
 
-<br>PCRE2 is the name used for a revised API for the PCRE library, which is a set of functions, written in C, that implement regular expression pattern matching using the same syntax and semantics as Perl. <sub>1</sub>
+<br>PCRE2 is the name used for a revised API for the PCRE library, which is a set of functions, written in C, that implement regular expression pattern matching using the same syntax and semantics as Perl. *
 
 PCRE2 was released in 2015 after PCRE became too annoying to improve upon.
 
 Many languages use PCRE/PCRE2 as models for their syntax, as there is no set standard.
 
 <br>
-<sub>1</sub> https://www.pcre.org/current/doc/html/pcre2.html
+* https://www.pcre.org/current/doc/html/pcre2.html
 
 
 
