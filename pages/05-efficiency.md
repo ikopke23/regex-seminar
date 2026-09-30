@@ -57,18 +57,23 @@ If a DFA can do it, it's fast. The further you get from a DFA, the more the engi
 | <span v-click="2">NFA simulation</span> | <span v-after>RE2, Go, Rust</span> | <span v-after>O(m·n), guaranteed</span> |
 | <span v-click="3">Backtracking</span> | <span v-after>PCRE2, Perl, Python, JS, Java</span> | <span v-after>O(2<sup>n</sup>) worst case</span> |
 
-<div v-click="4">
+---
 
-#### Backtracking without any fancy features: `^(a+)+$` on `aaa…a!`
+# Catastrophic backtracking
+
+#### No fancy features needed: `^(a+)+$` on `aaa…a!` in PCRE2
+
+```bash
+# N = number of a's; swap in ^a+$ to compare
+N=20; printf '/^(a+)+$/\n    %s!\n' "$(printf 'a%.0s' $(seq $N))" | pcre2test -t 1
+```
 
 | n | `^(a+)+$` | `^a+$` |
 | --- | --- | --- |
-| 10 | 40 µs | 1 µs |
-| 15 | 911 µs | 1 µs |
-| 20 | 26.7 ms | 2 µs |
-| 25 | **gives up: match limit exceeded** | 1 µs |
-
-</div>
+| <span v-click="1">10</span> | <span v-after>40 µs</span> | <span v-after>1 µs</span> |
+| <span v-click="2">15</span> | <span v-after>911 µs</span> | <span v-after>1 µs</span> |
+| <span v-click="3">20</span> | <span v-after>26.7 ms</span> | <span v-after>2 µs</span> |
+| <span v-click="4">25</span> | <span v-after>**gives up: match limit exceeded**</span> | <span v-after>1 µs</span> |
 
 <p v-click="5" style="color: #888888">
 Backreferences can't escape this: matching with them is NP-complete.
