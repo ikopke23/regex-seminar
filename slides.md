@@ -34,11 +34,11 @@ src: ./pages/03-riprepair.md
 ---
 
 ---
-src: ./pages/04-navigation.md
+src: ./pages/04-regex-syntax.md
 ---
 
 ---
-src: ./pages/05-code.md
+src: ./pages/05-navigation.md
 ---
 
 ---
