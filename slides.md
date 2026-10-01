@@ -22,6 +22,10 @@ src: ./pages/01-dfas.md
 ---
 
 ---
+src: ./pages/02-nfas.md
+---
+
+---
 src: ./pages/02-what-is-slidev.md
 ---
 
