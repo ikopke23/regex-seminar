@@ -303,6 +303,7 @@ graph LR
 
 <div class="text-2xl mt-6">
 
+<!-- OPTION A (previous): delete this template or the next one -->
 This is the NFA → DFA subset construction, done on the fly. Each character is read **once** and updates at most m states: O(m·n). At n = 26 that's 26 steps over at most 53 states, not 67 million paths.
 
 </div>
@@ -312,18 +313,23 @@ This is the NFA → DFA subset construction, done on the fly. Each character is 
 
 ---
 
-# What does it cost?
+# What's inside ripgrep?
 
-#### m = length of the regex, n = length of the input
+#### Rust's regex crate picks between several engines for each search
 
-| Engine | Used by | Matching time |
+| Engine | How it works | Worst case |
 | --- | --- | --- |
-| <span v-click="1">DFA</span> | <span v-click="1">grep, RE2, Rust (built lazily)</span> | <span v-click="1">O(n), but building it can take O(2<sup>m</sup>) states</span> |
-| <span v-click="2">NFA simulation</span> | <span v-click="2">RE2, Go, Rust, ripgrep</span> | <span v-click="2">O(m·n), guaranteed</span> |
-| <span v-click="3">Backtracking</span> | <span v-click="3">PCRE2, Perl, Python, JS, Java</span> | <span v-click="3">O(2<sup>n</sup>), Worst case</span> |
+| <span v-click="1">**Lazy DFA**</span> | <span v-click="1">builds DFA states from the NFA as it reads</span> | <span v-click="1">O(m·n)</span> |
+| <span v-click="2">**PikeVM**</span> | <span v-click="2">NFA simulation that also tracks capture groups</span> | <span v-click="2">O(m·n)</span> |
+| <span v-click="3">**Bounded backtracker**</span> | <span v-click="3">backtracks, but remembers work it already did</span> | <span v-click="3">O(m·n)</span> |
+| <span v-click="4">Backtracking</span> | <span v-click="4">Python, Perl, Java: one path at a time</span> | <span v-click="4">exponential</span> |
+
+<p v-click="5" style="color: #888888">
+m = regex length, n = input length. Perl's cache is the same idea as the bounded backtracker, but only for some patterns.
+</p>
 
 ---
-clicks: 11
+clicks: 10
 ---
 
 # So why not always use a linear engine?
@@ -342,7 +348,3 @@ clicks: 11
   { label: 'capture groups', example: '(\\d+)', bucket: 'fast', },
   { label: 'lookarounds', example: '(?=\\d)', bucket: 'slow', note: 'possible in theory, but mainstream linear engines do not support them yet' },
 ]" />
-
-<p v-click="11" style="color: #888888">
-Both demo patterns only use left-bucket features, and they still blew up. The engine decides the speed; these features decide which engine you can use.
-</p>
