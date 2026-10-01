@@ -17,20 +17,24 @@ comark: true
 
 <Comp src="./random-text.jpg" />
 
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
+---
+src: ./pages/01-dfas.md
+---
+
+---
+src: ./pages/02-nfas.md
+---
 
 ---
 src: ./pages/02-what-is-slidev.md
 ---
 
 ---
-src: ./pages/03-table-of-contents.md
+src: ./pages/03-riprepair.md
 ---
 
 ---
-src: ./pages/04-navigation.md
+src: ./pages/04-regex-syntax.md
 ---
 
 ---
@@ -38,11 +42,11 @@ src: ./pages/05-efficiency.md
 ---
 
 ---
-src: ./pages/05-code.md
+src: ./pages/06-components.md
 ---
 
 ---
-src: ./pages/06-components.md
+src: ./pages/07-regex-in-languages.md
 ---
 
 ---
