@@ -2,17 +2,17 @@
 
 <div v-click="1">
 
-#### Cloudflare, 2 July 2019
+#### Stack Overflow, 20 July 2016
 
-One new firewall rule contained `.*(?:.*=.*)`. CPUs hit nearly 100% across their network, every Cloudflare site returned 502 errors, and the service was down for **27 minutes**.
+A whitespace-trimming regex, `^[\s\u200c]+|[\s\u200c]+$`, hit a post with ~20,000 spaces in a row. Every render of the home page took 199,990,000 character checks, and the site was down for **34 minutes**.
 
 </div>
 
 <div v-click="2">
 
-#### Stack Overflow, 20 July 2016
+#### Cloudflare, 2 July 2019
 
-A whitespace-trimming regex, `^[\s\u200c]+|[\s\u200c]+$`, hit a post with ~20,000 spaces in a row. Every render of the home page took 199,990,000 character checks, and the site was down for **34 minutes**.
+One new firewall rule contained `.*(?:.*=.*)`. CPUs hit nearly 100% across their network, every Cloudflare site returned 502 errors, and the service was down for **27 minutes**.
 
 </div>
 
@@ -31,11 +31,11 @@ time rg '^(a+)+$' <<< "$(printf 'a%.0s' {1..24})!"
 | n | Python | Perl | ripgrep |
 | --- | --- | --- | --- |
 | <span v-click="1">16</span> | <span v-click="1">2.2 ms</span> | <span v-click="1">&lt; 0.1 ms</span> | <span v-click="1">&lt; 10 ms</span> |
-| <span v-click="3">26</span> | <span v-click="3">1.91 s</span> | <span v-click="4">&lt; 0.1 ms</span> | <span v-click="3">&lt; 10 ms</span> |
-| <span v-click="">10,000</span> | <span v-click="4">not attempted</span> | <span v-click="5">300 ms</span> | <span v-click="4">&lt; 10 ms</span> |
-| <span v-click="5">30,000</span> | <span v-click="5">not attempted</span> | <span v-click="5">2.72 s</span> | <span v-click="5">&lt; 10 ms</span>|
+| <span v-click="2">26</span> | <span v-click="2">1.91 s</span> | <span v-click="2">&lt; 0.1 ms</span> | <span v-click="2">&lt; 10 ms</span> |
+| <span v-click="3">10,000</span> | <span v-click="3">not attempted</span> | <span v-click="3">300 ms</span> | <span v-click="3">&lt; 10 ms</span> |
+| <span v-click="4">30,000</span> | <span v-click="4">not attempted</span> | <span v-click="4">2.72 s</span> | <span v-click="4">&lt; 10 ms</span> |
 
-<p v-click="6" style="color: #888888">
+<p v-click="5" style="color: #888888">
 Python and Perl both backtrack, but Perl spots this pattern and caches work it has already done. Not all implementations are equal, but the cache only turns exponential into quadratic: 10× the input, 100× the time.
 </p>
 
@@ -66,25 +66,249 @@ No cache catches this one: every 2 extra a's makes both backtracking engines tak
 
 # Why does it blow up?
 
-#### `a?a?aa` against `aa`: each `a?` can take an `a` or skip it
+#### Shrink the second demo to n = 2: `a?a?aa` against `aa`
 
-<div v-click="1" class="font-mono text-sm">
+<v-switch>
+<template #0>
 
-`a?`→a, `a?`→a: `aa` left for nothing ✗ · `a?`→a, `a?`→skip ✗ · `a?`→skip, `a?`→a ✗ · skip, skip: `aa` ✓
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+```
+
+<div class="text-2xl mt-6">
+
+Every `a?` is a fork: **consume** an `a`, or **skip** (ε). A backtracking engine follows **one path at a time**.
 
 </div>
 
-<div v-click="2">
+</template>
+<template #1>
 
-With n `a?`s there are 2<sup>n</sup> choices, and the greedy engine tries the only one that works **last**. A **backtracking** engine follows one path through the NFA at a time, so it backs up and retries until it gets there.
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  linkStyle 0,2 stroke:#f59e0b,stroke-width:5px
+  style s2 fill:#ef4444,color:#fff,stroke:#ef4444
+```
+
+<div class="text-2xl mt-6">
+
+**Try 1:** consume, consume. Out of input at state 2 ✗ back up
 
 </div>
 
-<div v-click="3">
+</template>
+<template #2>
 
-An **automaton** engine keeps the *set* of NFA states it could be in, like turning an NFA into a DFA. It reads each character once, so there is nothing to go back to: O(m·n) at worst.
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  linkStyle 0,3,4 stroke:#f59e0b,stroke-width:5px
+  style s3 fill:#ef4444,color:#fff,stroke:#ef4444
+```
+
+<div class="text-2xl mt-6">
+
+**Try 2:** consume, skip. Out of input at state 3 ✗ back up
 
 </div>
+
+</template>
+<template #3>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  linkStyle 1,2,4 stroke:#f59e0b,stroke-width:5px
+  style s3 fill:#ef4444,color:#fff,stroke:#ef4444
+```
+
+<div class="text-2xl mt-6">
+
+**Try 3:** skip, consume. Out of input at state 3 ✗ back up
+
+</div>
+
+</template>
+<template #4>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  linkStyle 1,3,4,5 stroke:#f59e0b,stroke-width:5px
+  style s4 fill:#22c55e,color:#fff,stroke:#22c55e
+```
+
+<div class="text-2xl mt-6">
+
+**Try 4:** skip, skip. Reaches state 4 ✓ match
+
+</div>
+
+</template>
+<template #5>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+```
+
+<div class="text-2xl mt-6">
+
+Greedy tries "consume" first, so the one path that works is the **last** one. n forks means 2<sup>n</sup> paths: at n = 26 that's 67 million.
+
+<p style="color: #888888">
+<code>^(a+)+$</code> is the same story: the nested <code>+</code> can split n a's 2<sup>n−1</sup> ways, and the <code>!</code> makes every split fail.
+</p>
+
+</div>
+
+</template>
+</v-switch>
+
+---
+
+# How does ripgrep avoid it?
+
+#### Same NFA, but follow **every** path at once
+
+<v-switch>
+<template #0>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+```
+
+<div class="text-2xl mt-6">
+
+Instead of picking one path, keep the **set** of states we could be in.
+
+</div>
+
+</template>
+<template #1>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  style s0 fill:#facc15,color:#000,stroke:#ca8a04
+  style s1 fill:#facc15,color:#000,stroke:#ca8a04
+  style s2 fill:#facc15,color:#000,stroke:#ca8a04
+```
+
+<div class="text-2xl mt-6">
+
+**Start:** &#123;0, 1, 2&#125;. ε lets us skip either `a?`
+
+</div>
+
+</template>
+<template #2>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  style s1 fill:#facc15,color:#000,stroke:#ca8a04
+  style s2 fill:#facc15,color:#000,stroke:#ca8a04
+  style s3 fill:#facc15,color:#000,stroke:#ca8a04
+```
+
+<div class="text-2xl mt-6">
+
+**Read `a`:** &#123;1, 2, 3&#125;. Every state moves forward on `a`
+
+</div>
+
+</template>
+<template #3>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+  style s2 fill:#facc15,color:#000,stroke:#ca8a04
+  style s3 fill:#facc15,color:#000,stroke:#ca8a04
+  style s4 fill:#22c55e,color:#fff,stroke:#22c55e
+```
+
+<div class="text-2xl mt-6">
+
+**Read `a`:** &#123;2, 3, 4&#125;. State 4 is accepting ✓ match
+
+</div>
+
+</template>
+<template #4>
+
+```mermaid {scale: 2.2}
+graph LR
+  s0((0)) -- a --> s1((1))
+  s0 -. ε .-> s1
+  s1 -- a --> s2((2))
+  s1 -. ε .-> s2
+  s2 -- a --> s3((3))
+  s3 -- a --> s4(((4)))
+```
+
+<div class="text-2xl mt-6">
+
+This is the NFA → DFA subset construction, done on the fly. Each character is read **once** and updates at most m states: O(m·n). At n = 26 that's 26 steps over at most 53 states, not 67 million paths.
+
+</div>
+
+</template>
+</v-switch>
 
 ---
 
