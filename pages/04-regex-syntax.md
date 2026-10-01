@@ -1,5 +1,5 @@
 ---
-clicks: 7
+clicks: 6
 ---
 
 # PCRE2 Syntax
