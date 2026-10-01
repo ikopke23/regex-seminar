@@ -42,6 +42,10 @@ src: ./pages/06-components.md
 ---
 
 ---
+src: ./pages/07-regex-in-languages.md
+---
+
+---
 src: ./pages/07-themes.md
 ---
 
